@@ -66,7 +66,7 @@ public static KeySelector<TInterface, TKey, TIn> DefaultKeySelect => (key, input
 
 ## Пример
 
-Есть интерфейс IService и требуется зарегистрировать множество его реализаций.
+Есть интерфейс _IService_ и требуется зарегистрировать множество его реализаций.
 
 ```
 public record ServiceType(int TypeId);
@@ -85,7 +85,7 @@ public interface IService
 ### Использование
 
 ```
-// Ресгистрация
+// Регистрация
 ...
     services.AddSelectionResolver<IService, ServiceType, int>(
         Assembly.GetExecutingAssembly(),
