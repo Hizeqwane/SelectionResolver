@@ -93,7 +93,7 @@ public interface IService
         (type, input) => type.TypeId == input);
 ...
 ```
-_Примечание: данная регистрация предполагает, что все реализации IService будут иметь ServiceType с разными TypeId._'
+_Примечание: данная регистрация предполагает, что все реализации IService будут иметь ServiceType с разными TypeId_.
 
 ```
 // Использование в сервисах
