@@ -22,12 +22,15 @@ public class SelectionResolver<TInterface, TKey, TIn>(
     /// <inheritdoc />
     public TInterface Get(TIn input)
     {
-        _types ??= Set();
-        var founded = _types.FirstOrDefault(s => keySelector(s.Key, input));
+        var founded = (_types ??= Set()).FirstOrDefault(s => keySelector(s.Key, input));
         return founded.Value != null 
             ? (TInterface)serviceProvider.GetService(founded.Value)
             : null;
     }
+
+    /// <inheritdoc />
+    public bool HasFor(TIn input) => 
+        (_types ??= Set()).Any(s => keySelector(s.Key, input));
 
     private ConcurrentDictionary<TKey, Type> Set()
     {
