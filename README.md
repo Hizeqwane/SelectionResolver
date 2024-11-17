@@ -114,6 +114,8 @@ public class SomeService(
 - использование _IEnumerable\<IService\>_, которую предоставляет _IServiceProvider_ для множества имплементаций
 - использование _ISelectionResolver\<IService, ServiceType, int\>_
 
+При этом в расчёт не берётся время первого обращения, так как и _IServiceProvider_ после первого обращения кэширует результаты (несмотря на создание scope перед каждым обращением), так и _ISelectionResolver_ при первом обращении создаёт справочник "ключ - имплементация".
+
 100:
 ```
 Without selection resolver
