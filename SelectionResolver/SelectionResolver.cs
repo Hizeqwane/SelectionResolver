@@ -10,8 +10,7 @@ public delegate bool KeySelector<in TInterface, in TKey, in TIn>(TKey key, TIn i
 /// <inheritdoc />
 public class SelectionResolver<TInterface, TKey, TIn>(
     DictSetter<TInterface, TKey> dictSetter,
-    KeySelector<TInterface, TKey, TIn> keySelector,
-    IServiceProvider serviceProvider)
+    KeySelector<TInterface, TKey, TIn> keySelector)
     : ISelectionResolver<TIn, TInterface>
     where TInterface : class where TKey : notnull
 {
@@ -20,19 +19,19 @@ public class SelectionResolver<TInterface, TKey, TIn>(
     public static KeySelector<TInterface, TKey, TIn> DefaultKeySelect => (key, input) => key.Equals(input);
     
     /// <inheritdoc />
-    public TInterface Get(TIn input)
+    public TInterface Get(TIn input, IServiceProvider serviceProvider)
     {
-        var founded = (_types ??= Set()).FirstOrDefault(s => keySelector(s.Key, input));
+        var founded = (_types ??= Set(serviceProvider)).FirstOrDefault(s => keySelector(s.Key, input));
         return founded.Value != null 
             ? (TInterface)serviceProvider.GetService(founded.Value)
             : null;
     }
 
     /// <inheritdoc />
-    public bool HasFor(TIn input) => 
-        (_types ??= Set()).Any(s => keySelector(s.Key, input));
+    public bool HasFor(TIn input, IServiceProvider serviceProvider) => 
+        (_types ??= Set(serviceProvider)).Any(s => keySelector(s.Key, input));
 
-    private ConcurrentDictionary<TKey, Type> Set()
+    private ConcurrentDictionary<TKey, Type> Set(IServiceProvider serviceProvider)
     {
         var services = serviceProvider.GetServices<TInterface>();
 

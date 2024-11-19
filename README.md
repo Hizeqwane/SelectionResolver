@@ -11,8 +11,10 @@ _TKey_ - объект, который будет представлять клю
 _TIn_ - объект, по которому будем получать имплементацию.
 
 Интерфейс содержит методы:
-- _IInterface Get(TIn input)_ - получение экземпляра по значению TIn;
-- _bool HasFor(TIn input)_ - отвечает на вопрос: зарегистрирован ли экземпляр для значения TIn.
+- _IInterface Get(TIn input, IServiceProvider serviceProvider)_ - получение экземпляра по значению TIn;
+- _bool HasFor(TIn input, IServiceProvider serviceProvider)_ - отвечает на вопрос: зарегистрирован ли экземпляр для значения TIn.
+
+Прокидывание _IServiceProvider\`а_ обусловлено разным временем жизни _ISelectionResolver_ и _IServic\`ов_, для которых используется резолвер.
 
 Сам по себе _ISelectionResolver_ использует _ConcurrentDictionary_ для сопоставления "ключ-имплементация" и регистрируется как _Singleton_.
 
@@ -99,11 +101,12 @@ _Примечание: данная регистрация предполага�
 // Использование в сервисах
 ...
 public class SomeService(
-    ISelectionResolver<int, IService> selectionResolver)
+    ISelectionResolver<int, IService> selectionResolver,
+    IServiceProvider serviceProvider)
 {
     public void Handle()
     {
-        var serviceWith5TypeId = selectionResolver.Get(5);
+        var serviceWith5TypeId = selectionResolver.Get(5, serviceProvider);
     }
 }
 ...
