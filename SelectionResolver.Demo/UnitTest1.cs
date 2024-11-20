@@ -64,7 +64,7 @@ public class Tests
             _serviceProviderWithSelectionResolver,
             (provider, id) => provider
                 .GetRequiredService<ISelectionResolver<int, IService>>()
-                .Get(id, _serviceProviderWithSelectionResolver)
+                .Get(id)
         );
         
         Console.WriteLine(@$"With selection resolver
