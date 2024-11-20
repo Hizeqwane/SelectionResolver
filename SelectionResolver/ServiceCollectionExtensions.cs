@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
             .AddAllServicesByInterfaceTypeAndImplementation(typeof(TInterface), assembly)
             .AddSingleton(_ => dictSetter)
             .AddSingleton(_ => keySelector)
-            .AddSingleton<ISelectionDictionary<TKey>, SelectionDictionary<TInterface, TKey>>()
+            .AddSingleton<ISelectionDictionary<TInterface, TKey>, SelectionDictionary<TInterface, TKey>>()
             .AddScoped<ISelectionResolver<TIn, TInterface>, SelectionResolver<TInterface, TKey, TIn>>();
     
     /// <summary>

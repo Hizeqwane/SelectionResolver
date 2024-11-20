@@ -7,7 +7,7 @@ public delegate bool KeySelector<in TInterface, in TKey, in TIn>(TKey key, TIn i
 /// <inheritdoc />
 public class SelectionResolver<TInterface, TKey, TIn>(
     KeySelector<TInterface, TKey, TIn> keySelector,
-    ISelectionDictionary<TKey> selectionDictionary,
+    ISelectionDictionary<TInterface, TKey> selectionDictionary,
     IServiceProvider serviceProvider)
     : ISelectionResolver<TIn, TInterface>
     where TInterface : class where TKey : notnull

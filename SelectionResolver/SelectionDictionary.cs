@@ -6,11 +6,12 @@ namespace SelectionResolver;
 /// <inheritdoc />
 public class SelectionDictionary<TInterface, TKey>(
     DictSetter<TInterface, TKey> dictSetter)
-    : ISelectionDictionary<TKey>
-    where TKey : notnull
+    : ISelectionDictionary<TInterface, TKey>
+    where TInterface : class where TKey : notnull
 {
     private ConcurrentDictionary<TKey, Type> _dict;
     
+    /// <inheritdoc />
     public IReadOnlyDictionary<TKey, Type> Get(IServiceProvider serviceProvider) => 
         (_dict ??= Set(serviceProvider));
 
