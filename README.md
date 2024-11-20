@@ -119,38 +119,38 @@ public class SomeService(
 100:
 ```
 Without selection resolver
- Max: 00:00:00.0320488
- Mean: 00:00:00.0003895
- Median: 00:00:00.0000688
+ Max: 00:00:00.0331461
+ Mean: 00:00:00.0003747
+ Median: 00:00:00.0000391
  
 With selection resolver
- Max: 00:00:00.0007627
- Mean: 00:00:00.0000163
- Median: 00:00:00.0000072
+ Max: 00:00:00.0005640
+ Mean: 00:00:00.0000169
+ Median: 00:00:00.0000047
 ```
 
 500:
 ```
 Without selection resolver
- Max: 00:00:00.1999964
- Mean: 00:00:00.0006230
- Median: 00:00:00.0001686
+ Max: 00:00:00.1715133
+ Mean: 00:00:00.0004974
+ Median: 00:00:00.0001109
  
 With selection resolver
- Max: 00:00:00.0011567
- Mean: 00:00:00.0000298
- Median: 00:00:00.0000269
+ Max: 00:00:00.0006335
+ Mean: 00:00:00.0000147
+ Median: 00:00:00.0000125
 ```
 
 1000:
 ```
 Without selection resolver
- Max: 00:00:00.4572421
- Mean: 00:00:00.0007301
- Median: 00:00:00.0001898
+ Max: 00:00:00.3368677
+ Mean: 00:00:00.0005786
+ Median: 00:00:00.0001860
  
 With selection resolver
- Max: 00:00:00.0024519
- Mean: 00:00:00.0000461
- Median: 00:00:00.0000488
+ Max: 00:00:00.0013688
+ Mean: 00:00:00.0000280
+ Median: 00:00:00.0000250
 ```
