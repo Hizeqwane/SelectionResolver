@@ -9,5 +9,5 @@ public interface ISelectionDictionary<TInterface, TKey>
     /// <summary>
     /// Получить справочник
     /// </summary>
-    IReadOnlyDictionary<TKey, Type> Get(IServiceProvider serviceProvider);
+    IReadOnlyDictionary<TKey, List<Type>> Get(IServiceProvider serviceProvider);
 }

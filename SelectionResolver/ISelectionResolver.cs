@@ -9,6 +9,11 @@ public interface ISelectionResolver<in TIn, out TService> where TService : class
     /// Получить сервис по значению 
     /// </summary>
     TService Get(TIn input);
+    
+    /// <summary>
+    /// Получить сервисы по значению 
+    /// </summary>
+    IEnumerable<TService> GetMulti(TIn input);
 
     /// <summary>
     /// Есть ли экземпляр по значению
