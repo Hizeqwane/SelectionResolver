@@ -12,6 +12,7 @@ _TIn_ - объект, по которому будем получать импл
 
 Интерфейс содержит методы:
 - _IInterface Get(TIn input)_ - получение экземпляра по значению TIn;
+- _IEnumerable<IInterface> GetMulti(TIn input)_ - получение всех экземпляров по значению TIn;
 - _bool HasFor(TIn input)_ - отвечает на вопрос: зарегистрирован ли экземпляр для значения TIn.
 
 Сам по себе _ISelectionResolver_ использует _ConcurrentDictionary_ (через _SelectionDictionary_) для сопоставления "ключ-имплементация" и регистрируется как _Singleton_.
@@ -25,36 +26,50 @@ _TIn_ - объект, по которому будем получать импл
     /// Регистрация ISelectionResolver
     /// </summary>
     /// <param name="services">IServiceCollection</param>
-    /// <param name="assembly">Сборка для поиска реализаций IService</param>
+    /// <param name="assemblies">Сборки для поиска реализаций IService</param>
     /// <param name="dictSetter">Делегат установки ключа</param>
     /// <param name="keySelector">Делегат поиска реализации</param>
+    /// <param name="serviceLifetime">Время жизни для сервисов</param>
     /// <typeparam name="TInterface">Интерфейс множественной регистрации</typeparam>
     /// <typeparam name="TKey">Ключ</typeparam>
     /// <typeparam name="TIn">Параметр для поиска имплементации IInterface</typeparam>
     public static IServiceCollection AddSelectionResolver<TInterface, TKey, TIn>(
         this IServiceCollection services,
-        Assembly assembly,
         DictSetter<TInterface, TKey> dictSetter,
-        KeySelector<TInterface, TKey, TIn> keySelector)
-        where TInterface : class
-        
-    ...
-    ...
-    
+        KeySelector<TInterface, TKey, TIn> keySelector,
+        ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
+        params Assembly[] assemblies)
+    where TInterface : class =>
+        services
+            .AddAllServicesByInterfaceTypeAndImplementation(typeof(TInterface), serviceLifetime, assemblies)
+            .AddSingleton(_ => dictSetter)
+            .AddSingleton(_ => keySelector)
+            .AddSingleton<ISelectionDictionary<TInterface, TKey>, SelectionDictionary<TInterface, TKey>>()
+            .AddScoped<ISelectionResolver<TIn, TInterface>, SelectionResolver<TInterface, TKey, TIn>>();
+
     /// <summary>
     /// Регистрация ISelectionResolver (используется делегат поиска по умолчанию)
     /// </summary>
     /// <param name="services">IServiceCollection</param>
-    /// <param name="assembly">Сборка для поиска реализаций IService</param>
+    /// <param name="serviceLifetime">Время жизни для сервисов</param>
+    /// <param name="assemblies">Сборки для поиска реализаций IService</param>
     /// <param name="dictSetter">Делегат установки ключа</param>
     /// <typeparam name="TInterface">Интерфейс множественной регистрации</typeparam>
     /// <typeparam name="TKey">Ключ</typeparam>
     /// <typeparam name="TIn">Параметр для поиска имплементации IInterface</typeparam>
     public static IServiceCollection AddSelectionResolver<TInterface, TKey, TIn>(
         this IServiceCollection services,
-        Assembly assembly,
-        DictSetter<TInterface, TKey> dictSetter)
-        where TInterface : class
+        DictSetter<TInterface, TKey> dictSetter,
+        ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
+        params Assembly[] assemblies)
+        where TInterface : class =>
+        services.AddSelectionResolver
+            (
+                dictSetter,
+                SelectionResolver<TInterface, TKey, TIn>.DefaultKeySelect,
+                serviceLifetime,
+                assemblies
+            );
 ```
 Делегат поиска по умолчанию выглядит следующим образом:
 ```
@@ -62,7 +77,7 @@ public static KeySelector<TInterface, TKey, TIn> DefaultKeySelect => (key, input
 ```
 
 При использовании регистрации такого вида отпадает необходимость использовать делегаты регистрации в IServiceProvider, так как такой способ требует актуализации делегата при добавлении новых имплементаций.
-Таким образом при добавлении новых имплементаций не требуется вносить изменений в классы регистрации классов (как правило регистрацию сервисов реализуют в _Startup.cs_).
+Таким образом при добавлении новых имплементаций не требуется вносить изменений в классы регистрации сервисов (как правило регистрацию сервисов реализуют в _Startup.cs_).
 
 ## Пример
 
@@ -88,9 +103,9 @@ public interface IService
 // Регистрация
 ...
     services.AddSelectionResolver<IService, ServiceType, int>(
-        Assembly.GetExecutingAssembly(),
         iService => iService.Type,
-        (type, input) => type.TypeId == input);
+        (type, input) => type.TypeId == input,
+        assemblies: Assembly.GetExecutingAssembly(),);
 ...
 ```
 _Примечание: данная регистрация предполагает, что все реализации IService будут иметь ServiceType с разными TypeId_.
@@ -115,6 +130,7 @@ public class SomeService(
 - использование _ISelectionResolver\<IService, ServiceType, int\>_
 
 При этом в расчёт не берётся время первого обращения, так как и _IServiceProvider_ после первого обращения кэширует результаты (несмотря на создание scope перед каждым обращением), так и _ISelectionResolver_ при первом обращении создаёт справочник "ключ - имплементация".
+Дополнительно можно прописать при запуске сервиса "прогрев" справочника, так что при первом запросе к сервису уже будет использоваться _SelectionResolver_.
 
 100:
 ```

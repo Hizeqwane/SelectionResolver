@@ -22,16 +22,16 @@ public class Tests
         var servicesWithSelectionResolver = new ServiceCollection();
         
         servicesWithSelectionResolver.AddSelectionResolver<IService, ServiceType, int>(
-            Assembly.GetExecutingAssembly(),
             iService => iService.Type,
-            (type, input) => type.TypeId == input);
+            (type, input) => type.TypeId == input,
+            assemblies: assembly);
 
         _serviceProviderWithSelectionResolver = servicesWithSelectionResolver.BuildServiceProvider();
 
         var servicesWithoutSelectionResolver = new ServiceCollection();
 
         servicesWithoutSelectionResolver
-            .AddAllServicesByInterfaceType(typeof(IService), assembly);
+            .AddAllServicesByInterfaceType(typeof(IService), assemblies: assembly);
 
         _serviceProviderWithoutSelectionResolver = servicesWithoutSelectionResolver.BuildServiceProvider();
     }
